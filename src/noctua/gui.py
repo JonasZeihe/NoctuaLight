@@ -7,29 +7,29 @@ from noctua.logger import Logger
 
 class NoctuaGUI:
     """
-    The NoctuaGUI class is responsible for managing the graphical interface of Noctua,
-    including component selection, logging options, and triggering the report generation.
+    The NoctuaGUI class is responsible for managing the graphical interface of NoctuaLight,
+    providing a simple way to generate a short hardware report with optional logging.
     """
 
     def __init__(
         self,
         root_window,
-        component_selection_vars,
-        select_all_components_var,
-        detailed_report_option_var,
         report_generation_callback,
         application_closure_callback,
     ):
         """
         Initializes the Noctua GUI interface with the provided settings.
+
+        Args:
+            root_window: The main Tk window.
+            report_generation_callback: A function to call when generating the report.
+            application_closure_callback: A function to call when closing the application.
         """
         self.root_window = root_window
-        self.component_selection_vars = component_selection_vars
-        self.select_all_components_var = select_all_components_var
-        self.detailed_report_option_var = detailed_report_option_var
         self.report_generation_callback = report_generation_callback
         self.application_closure_callback = application_closure_callback
 
+        # BooleanVar for enabling/disabling logging
         self.logging_option_var = tk.BooleanVar(value=False)
         self.logger = None
 
@@ -49,7 +49,7 @@ class NoctuaGUI:
         Configures the main window's properties, including geometry, title, and background color.
         """
         self.root_window.geometry("800x600")
-        self.root_window.title("Noctua Hardware Report Application")
+        self.root_window.title("NoctuaLight - Hardware Report Application")
         self.root_window.configure(background="#f4f4f4")
 
     def set_background_image(self, image_filename):
@@ -73,12 +73,11 @@ class NoctuaGUI:
 
     def create_interface_elements(self):
         """
-        Assembles all interface elements, such as labels, text entries, checkboxes, and buttons.
+        Assembles all interface elements, such as labels, text entries, checkbox, and buttons.
         """
         self.create_welcome_label()
         self.create_pc_name_entry_field()
         self.create_logging_checkbox()
-        self.create_component_selection_checkbuttons()
         self.create_action_buttons()
 
     def create_welcome_label(self):
@@ -87,7 +86,7 @@ class NoctuaGUI:
         """
         welcome_label = tk.Label(
             self.main_frame,
-            text="Welcome to Noctua!\nAnalyze your system's hardware information.",
+            text="Welcome to NoctuaLight!\nGenerate a quick hardware summary of your system.",
             wraplength=350,
             bg="white",
             font=("Arial", 14, "bold"),
@@ -104,6 +103,7 @@ class NoctuaGUI:
             self.main_frame, text="PC Name:", bg="white", font=("Arial", 12)
         )
         pc_name_label.grid(row=1, column=0, sticky="e", padx=10, pady=10)
+
         self.pc_name_entry_field = tk.Entry(
             self.main_frame, width=30, font=("Arial", 12), bd=2, relief="groove"
         )
@@ -120,68 +120,16 @@ class NoctuaGUI:
         )
         logging_checkbox.grid(row=2, column=0, columnspan=2, pady=10)
 
-    def create_component_selection_checkbuttons(self):
-        """
-        Creates checkbuttons for each component selection option.
-        """
-        self.create_select_all_components_checkbutton()
-        self.create_detailed_report_option_checkbutton()
-        self.create_individual_component_checkbuttons()
-
-    def create_select_all_components_checkbutton(self):
-        """
-        Adds a checkbutton to select all hardware components for the report.
-        """
-        self.select_all_components_var.set(True)
-        select_all_checkbox = ttk.Checkbutton(
-            self.main_frame,
-            text="Select All Components",
-            variable=self.select_all_components_var,
-            command=self.toggle_select_all_components,
-        )
-        select_all_checkbox.grid(row=3, column=0, columnspan=2, pady=10)
-
-    def create_detailed_report_option_checkbutton(self):
-        """
-        Adds a checkbutton for enabling detailed report generation.
-        """
-        self.detailed_report_option_var.set(False)
-        detailed_report_checkbox = ttk.Checkbutton(
-            self.main_frame,
-            text="Generate Detailed Report",
-            variable=self.detailed_report_option_var,
-            command=self.toggle_detailed_report_option,
-        )
-        detailed_report_checkbox.grid(row=4, column=0, columnspan=2, pady=10)
-
-    def create_individual_component_checkbuttons(self):
-        """
-        Creates individual checkbuttons for each selectable hardware component.
-        """
-        component_frame = tk.Frame(self.main_frame, bg="white")
-        component_frame.grid(row=5, column=0, columnspan=2, pady=10)
-
-        for index, (component_name, component_var) in enumerate(
-            self.component_selection_vars.items()
-        ):
-            row, col = divmod(index, 2)
-            checkbutton = ttk.Checkbutton(
-                component_frame,
-                text=component_name.capitalize(),
-                variable=component_var,
-            )
-            checkbutton.grid(row=row, column=col, padx=10, pady=5, sticky="w")
-
     def create_action_buttons(self):
         """
         Adds action buttons for generating the report and closing the application.
         """
         button_frame = tk.Frame(self.main_frame, bg="white")
-        button_frame.grid(row=6, column=0, columnspan=2, pady=20)
+        button_frame.grid(row=3, column=0, columnspan=2, pady=20)
 
         generate_button = ttk.Button(
             button_frame,
-            text="Generate Report",
+            text="Generate Short Report",
             command=self.confirm_report_generation,
         )
         generate_button.grid(row=0, column=0, padx=10)
@@ -193,30 +141,14 @@ class NoctuaGUI:
 
     def confirm_report_generation(self):
         """
-        Validates component selection and initiates report generation.
+        Initiates report generation. We don't need to validate component selection
+        because NoctuaLight always generates a short report.
         """
-        if not self.validate_component_selection():
-            result = messagebox.askokcancel(
-                "No Components Selected",
-                "No components selected. Generate an empty report?",
-            )
-            if not result:
-                return
-
         if self.logging_option_var.get():
             self.logger = Logger(log_to_file=True)
             self.logger.info("Logging enabled from GUI")
 
         self.show_loading_screen("background_loading.png")
-
-    def validate_component_selection(self):
-        """
-        Validates whether at least one component is selected for the report.
-        """
-        return (
-            any(var.get() for var in self.component_selection_vars.values())
-            or self.select_all_components_var.get()
-        )
 
     def show_loading_screen(self, image_filename):
         """
@@ -227,6 +159,8 @@ class NoctuaGUI:
             self.loading_image = PhotoImage(file=loading_image_path)
             loading_label = tk.Label(self.root_window, image=self.loading_image)
             loading_label.place(relwidth=1, relheight=1)
+
+        # Delay 100ms, then generate report
         self.root_window.after(100, self.generate_report)
 
     def generate_report(self):
@@ -271,19 +205,3 @@ class NoctuaGUI:
         )
         image_path = os.path.join(base_dir, filename)
         return image_path if os.path.exists(image_path) else None
-
-    def toggle_select_all_components(self):
-        """
-        Toggles the selection state of all component checkbuttons.
-        """
-        state = self.select_all_components_var.get()
-        for var in self.component_selection_vars.values():
-            var.set(state)
-
-    def toggle_detailed_report_option(self):
-        """
-        Toggles the selection state for generating a detailed report.
-        """
-        state = self.detailed_report_option_var.get()
-        for var in self.component_selection_vars.values():
-            var.set(state)

@@ -1,6 +1,8 @@
 import tkinter as tk
 from noctua.gui import NoctuaGUI
 from noctua.report import Report
+
+# Hardware-Komponenten
 from noctua.hardware.cpu import CPU
 from noctua.hardware.gpu import GPU
 from noctua.hardware.ram import RAM
@@ -9,6 +11,7 @@ from noctua.hardware.network import Network
 from noctua.hardware.motherboard import Motherboard
 from noctua.hardware.bios import BIOS
 from noctua.hardware.system import System
+
 from noctua.logger import Logger
 
 
@@ -24,52 +27,23 @@ class Noctua:
         self.logger = Logger(log_to_file=is_logging_enabled)
         self.logger.debug("Noctua application initialization process started")
 
+        # Hauptfenster (Tk) erstellen
         self.application_root_window = tk.Tk()
         self.application_root_window.title("Noctua - Hardware Information Overview")
         self.logger.info("Noctua application main window created successfully")
 
-        self.hardware_selection_variables = (
-            self.initialize_hardware_selection_variables()
-        )
-        self.select_all_components_option = tk.BooleanVar(value=True)
-        self.request_detailed_information_option = tk.BooleanVar(value=False)
-        self.hardware_component_instances = (
-            self.initialize_hardware_component_instances()
-        )
+        # Hardware-Komponenten instanzieren
+        self.hardware_component_instances = self.initialize_hardware_component_instances()
 
-        self.report_generator = Report(
-            self.hardware_selection_variables,
-            self.select_all_components_option,
-            self.request_detailed_information_option,
-            self.logger,
-        )
+        # Report-Generator instanzieren
+        self.report_generator = Report(logger=self.logger)
+
+        # GUI-Objekt erstellen
         self.noctua_user_interface = NoctuaGUI(
-            self.application_root_window,
-            self.hardware_selection_variables,
-            self.select_all_components_option,
-            self.request_detailed_information_option,
-            self.generate_hardware_report,
-            self.terminate_noctua_application,
+            root_window=self.application_root_window,
+            report_generation_callback=self.generate_hardware_report,
+            application_closure_callback=self.terminate_noctua_application,
         )
-
-    def initialize_hardware_selection_variables(self):
-        """
-        Sets up variables for GUI checkboxes to allow users to select specific hardware components.
-
-        Returns:
-            dict: A dictionary containing BooleanVar instances for each hardware component.
-        """
-        self.logger.debug("Setting up selection variables for each hardware component")
-        return {
-            "system": tk.BooleanVar(),
-            "cpu": tk.BooleanVar(),
-            "ram": tk.BooleanVar(),
-            "disk": tk.BooleanVar(),
-            "network": tk.BooleanVar(),
-            "gpu": tk.BooleanVar(),
-            "motherboard": tk.BooleanVar(),
-            "bios": tk.BooleanVar(),
-        }
 
     def initialize_hardware_component_instances(self):
         """
@@ -104,7 +78,7 @@ class Noctua:
 
     def generate_hardware_report(self, system_name=""):
         """
-        Generates a comprehensive hardware report based on selected components.
+        Generates a comprehensive (short) hardware report.
 
         Args:
             system_name (str): Optional system name for report identification.
@@ -115,7 +89,7 @@ class Noctua:
                 self.hardware_component_instances
             )
             self.report_generator.generate_report(
-                system, cpu, gpu, ram, disk, network, motherboard, bios, system_name
+                system, cpu, gpu, ram, disk, network, motherboard, bios, pc_name=system_name
             )
         except Exception as report_error:
             self.logger.error(
