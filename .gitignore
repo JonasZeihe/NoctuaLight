@@ -1,0 +1,168 @@
+# ------------------------------------------------------------------------------
+# Betriebssystem-Spezifische Dateien
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ------------------------------------------------------------------------------
+# Python Files
+# ------------------------------------------------------------------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+wheels/
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+.hypothesis/
+.pytest_cache/
+
+# MyPy, Pyre, Pytype
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ------------------------------------------------------------------------------
+# Environment Files
+# ------------------------------------------------------------------------------
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# dotenv
+.env
+
+# Pyenv
+.python-version
+
+# pipenv
+Pipfile
+# Pipfile.lock
+
+# Poetry
+pyproject.toml
+# poetry.lock
+
+# ------------------------------------------------------------------------------
+# IDEs & Tools
+# ------------------------------------------------------------------------------
+# PyCharm & JetBrains
+.idea/
+
+# Eclipse
+.project
+.cproject
+.settings/
+.classpath
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# ------------------------------------------------------------------------------
+# Frameworks & Tools
+# ------------------------------------------------------------------------------
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# mkdocs documentation
+/site
+
+# ------------------------------------------------------------------------------
+# Miscellaneous
+# ------------------------------------------------------------------------------
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.backup
+
+# Lock files
+.lock
+
+# Miscellaneous files
+*.pid
+*.seed
+*.pid.lock
+*.trace
+*.gz
+*.orig
+*.rej
+
+# Eigene Verzeichnisse
+logs/
+temp/
+cache/
+
+# ------------------------------------------------------------------------------
+# Versteckte Dateien & Git
+# ------------------------------------------------------------------------------
+.* 
+!.gitignore
+!.gitmodules
+!.github/
