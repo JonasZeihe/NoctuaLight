@@ -1,4 +1,4 @@
-name: Build, Test, and Release Noctua
+name: Build, Test, and Release NoctuaLight
 
 on:
   push:
@@ -30,14 +30,14 @@ jobs:
       - name: Build executable with timestamp
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-          pyinstaller --name "noctua_$($currentDate)" --onefile --add-data "resources/images;resources/images" src/noctua/main.py
+          pyinstaller --name "noctuaLight_$($currentDate)" --onefile --add-data "resources/images;resources/images" src/noctua/main.py
         shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: noctua-exe
-          path: dist/noctua_*.exe
+          name: noctuaLight-exe
+          path: dist/noctuaLight_*.exe
 
   release:
     needs: build
@@ -47,12 +47,12 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: noctua-exe
+          name: noctuaLight-exe
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: noctua_*.exe
+          files: noctuaLight_*.exe
           tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           name: "Release ${{ github.run_id }}-${{ github.run_number }}"
           body: "Automated release of Noctua version ${{ github.run_id }}-${{ github.run_number }}"
